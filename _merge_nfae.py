@@ -15,31 +15,29 @@ def merge(a: NFAe,
 
 Parameters:
 
-    `a: NFAe` - the first automaton to merge
+    a: `NFAe` - the first automaton to merge
 
-    `b: NFAe` - the second automaton to merge
+    b: `NFAe` - the second automaton to merge
 
-    `a_to_b: Dict[(AState, Symbol?) -> Set[BState])]` - some transitions to create where \
+    a_to_b: `Dict[(AState, Symbol?) -> Set[BState])]` - some transitions to create where \
         the keys are the state in `a` to start the transition from and the symbol that uses the transition (or `None` for an ε-transition) and \
         the values are the set of states in `b` to transition to
 
-    `b_to_a: Dict[(BState, Symbol?) -> Set[State])]` - similar to `a_to_b` but this time the transitions go from `b` and into `a`
+    b_to_a: `Dict[(BState, Symbol?) -> Set[State])]` - similar to `a_to_b` but this time the transitions go from `b` and into `a`
 
-    `new_initial_state: State` - the state that should be used as the initial state in the new automaton
+    new_initial_state: `State` - the state that should be used as the initial state in the new automaton
 
-    `new_initial_state_from_b: bool` - whether the new initial state specified is the state from `b`. If not then it is assumed to be the one from `a`
+    new_initial_state_from_b: `bool` - whether the new initial state specified is the state from `b`. If not then it is assumed to be the one from `a`
 
 Returns:
 
-    `out: NFAe` - the NFA-ε result from the merge
+    out: `NFAe` - the NFA-ε result from the merge
 
-    `a_mapping: Dict[AState -> OutState]` - mapping from states in `a` to states in `out`
+    a_mapping: `Dict[AState -> OutState]` - mapping from states in `a` to states in `out`
 
-    `b_mapping: Dict[BState -> OutState]` - mapping from states in `b` to states in `out`
+    b_mapping: `Dict[BState -> OutState]` - mapping from states in `b` to states in `out`
 
 """
-
-    assert a.alphabet == b.alphabet, "Can only merge automata with the same alphabets"
 
     aN = a.state_count
     bN = b.state_count
@@ -56,6 +54,10 @@ Returns:
     b_mapping: Dict[State, State] = {}
     for s in range(bN):
         b_mapping[s] = s + b_offset
+
+    # Alphabet
+
+    out_alphabet = a.alphabet | b.alphabet
 
     # Accepting states
 
@@ -102,9 +104,15 @@ Returns:
         out_s = a_mapping[s]
         out_ts: Set[State] = set([b_mapping[t] for t in ts])
 
-        assert (out_s, sym_opt) not in out_transitions
+        key = (out_s, sym_opt)
 
-        out_transitions[(out_s, sym_opt)] = out_ts
+        if key in out_transitions:
+
+            out_transitions[key] |= out_ts
+
+        else:
+
+            out_transitions[key] = out_ts
 
     for (s, sym_opt) in b_to_a:
 
@@ -113,9 +121,15 @@ Returns:
         out_s = b_mapping[s]
         out_ts: Set[State] = set([a_mapping[t] for t in ts])
 
-        assert (out_s, sym_opt) not in out_transitions
+        key = (out_s, sym_opt)
 
-        out_transitions[(out_s, sym_opt)] = out_ts
+        if key in out_transitions:
+
+            out_transitions[key] |= out_ts
+
+        else:
+
+            out_transitions[key] = out_ts
 
     # Initial state
 
@@ -129,7 +143,7 @@ Returns:
     out = NFAe(
         state_count=outN,
         accepting_states=out_accepting_states,
-        alphabet=a.alphabet,  # Should be that a.alphabet == b.alphabet
+        alphabet=out_alphabet,
         transitions=out_transitions,
         initial_state=out_initial_state
     )

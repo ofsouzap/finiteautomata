@@ -46,22 +46,11 @@ class NFAe:
         return outs
 
     def get_next_states(self, curr_state: State, symbol: Symbol) -> Set[State]:
+        """N.B. will only use symbol-requiring transitions, won't use ε-transitions"""
 
         assert symbol in self.alphabet, "Invalid symbol"
 
         if (curr_state, symbol) in self.transitions:
-
-            next_states = self.transitions[(curr_state, symbol)]
-
-            out_states: Set[State] = set()
-
-            for s in next_states:
-
-                out_states.add(s)
-
-                out_states |= self.find_epsilon_transitions(s)
-
-            return out_states
-
+            return self.transitions[(curr_state, symbol)]
         else:
             return set()

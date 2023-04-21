@@ -123,3 +123,31 @@ def test_invalid_symbol():
         raise Exception("No exception raised")
     except:
         pass
+
+
+def test_multi_e_transition():
+
+    nfae = NFAe(
+        state_count=5,
+        accepting_states={2},
+        alphabet={"a", "b"},
+        transitions={
+            (0, "a"): {1},
+            (1, None): {3},
+            (1, "b"): {2},
+            (3, None): {4},
+            (4, "a"): {2}
+        },
+        initial_state=0
+    )
+
+    runner = NFAeRunner(nfae)
+
+    runner_test(runner,
+                string=["a","b"],
+                states=[
+                    {0},
+                    {1, 3, 4},
+                    {2},
+                ],
+                acceptings=[False, False, True])
