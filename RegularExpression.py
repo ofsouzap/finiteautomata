@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, List, Optional, Tuple
 from abc import ABC, abstractmethod
 from FiniteAutomaton import Symbol, Alphabet, String
 

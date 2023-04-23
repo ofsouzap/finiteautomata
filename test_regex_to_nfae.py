@@ -5,6 +5,8 @@ from FiniteAutomaton import String
 from NFAe import NFAe, Symbol
 from NFAeRunner import NFAeRunner
 
+from _string_generator import generate_strings
+
 
 def compare_strings(a: String, b: String) -> bool:
 
@@ -16,26 +18,6 @@ def compare_strings(a: String, b: String) -> bool:
             return False
 
     return True
-
-
-def generate_strings(alphabet: Set[Symbol],
-                     prev: String,
-                     N: int) -> Iterator[String]:
-
-    yield prev
-
-    if N == 0:
-
-        return
-
-    else:
-
-        for c in alphabet:
-
-            new = prev + c
-
-            for out in generate_strings(alphabet, new, N-1):
-                yield out  # Yield with greater lengths
 
 
 def do_test(regex: RegularExpression,
