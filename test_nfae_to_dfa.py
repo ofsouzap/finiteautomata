@@ -54,13 +54,11 @@ def assert_runners_equal(runner_n: NFAeRunner, runner_d: DFARunner) -> None:
     assert runner_n.accepting == runner_d.accepting
 
 
-def runner_comparison_test(nfae: NFAe, N: int) -> None:
+def runner_comparison_test(nfae: NFAe, dfa: DFA, N: int) -> None:
 
     for string in iter_possible_strings(nfae.alphabet, N, String()):
 
         runner_n = NFAeRunner(nfae)
-
-        dfa = nfae_to_dfa(nfae)
         runner_d = DFARunner(dfa)
 
         assert_runners_equal(runner_n, runner_d)
@@ -88,7 +86,9 @@ def test_general_0():
         initial_state=0
     )
 
-    runner_comparison_test(nfae, 5)
+    dfa = nfae_to_dfa(nfae)
+
+    runner_comparison_test(nfae, dfa, 5)
 
 
 def test_general_1():
@@ -109,4 +109,6 @@ def test_general_1():
         initial_state=0
     )
 
-    runner_comparison_test(nfae, 10)
+    dfa = nfae_to_dfa(nfae)
+
+    runner_comparison_test(nfae, dfa, 10)
