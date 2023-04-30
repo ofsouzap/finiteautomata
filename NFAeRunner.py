@@ -16,22 +16,32 @@ class NFAeRunner:
     def __refresh_curr_states(self) -> None:
         """Checks for and applies any ε-transitions in the current subset of states"""
 
-        old_states = set()
-        new_states = copy(self._states)
+        # This function uses a breadth-first search to build a list of states the runner should be in
 
-        while len(old_states) != len(new_states):  # This will keep running until no ε-transitions can be found anymore
+        # Create queue and add initial states
 
-            old_states = copy(new_states)
-            new_states = set()
+        q = []
 
-            for s in old_states:
+        for s in self._states:
+            q.append(s)
 
-                new_states.add(s)
+        # Perform search
 
-                for t in self._nfae.find_epsilon_transitions(s):
-                    new_states.add(t)
+        i = 0
 
-        self._states = new_states
+        while i < len(q):
+
+            s = q[i]
+
+            ts = self._nfae.find_epsilon_transitions(s)
+
+            for t in ts:
+                if t not in q:
+                    q.append(t)
+
+            i += 1
+
+        self._states = set(q)
 
 
     def read_symbol(self, sym: Symbol) -> None:
