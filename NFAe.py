@@ -27,23 +27,12 @@ class NFAe:
 
     def find_epsilon_transitions(self, state: State) -> Set[State]:
 
-        outs: Set[State] = set()
+        key = (state, None)
 
-        for (s, sym_opt) in self.transitions:
-
-            if s != state:
-                continue
-            if sym_opt is not None:
-                continue
-
-            assert (s == state) and (sym_opt is None)
-
-            nexts = self.transitions[(s, sym_opt)]
-
-            for t in nexts:
-                outs.add(t)
-
-        return outs
+        if key in self.transitions:
+            return self.transitions[key]
+        else:
+            return set()
 
     def get_next_states(self, curr_state: State, symbol: Symbol) -> Set[State]:
         """N.B. will only use symbol-requiring transitions, won't use ε-transitions"""
