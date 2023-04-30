@@ -10,6 +10,10 @@ class RENode(ABC):
         raise NotImplementedError()
 
     @abstractmethod
+    def __len__(self):
+        raise NotImplementedError()
+
+    @abstractmethod
     def _check_alphabet(self, alphabet: Alphabet):
         raise NotImplementedError()
 
@@ -21,6 +25,9 @@ class RENull(RENode):
 
     def __str__(self):
         return "∅"
+
+    def __len__(self):
+        return 1
 
     def _check_alphabet(self, alphabet: Alphabet):
         return True
@@ -34,6 +41,9 @@ class REEmpty(RENode):
     def __str__(self):
         return "ε"
 
+    def __len__(self):
+        return 1
+
     def _check_alphabet(self, alphabet: Alphabet):
         return True
 
@@ -45,6 +55,9 @@ class REConc(RENode):
 
     def __str__(self):
         return "(" + ")(".join([str(n) for n in self.nodes]) + ")"
+
+    def __len__(self):
+        return sum([len(child) for child in self.nodes])
 
     def _check_alphabet(self, alphabet: Alphabet):
         return all([n._check_alphabet(alphabet) for n in self.nodes])
@@ -58,6 +71,9 @@ class RESym(RENode):
     def __str__(self):
         return self.sym
 
+    def __len__(self):
+        return 1
+
     def _check_alphabet(self, alphabet: Alphabet):
         return self.sym in alphabet
 
@@ -70,6 +86,9 @@ class RERepeat(RENode):
     def __str__(self):
         return f"({str(self.node)})*"
 
+    def __len__(self):
+        return len(self.node)
+
     def _check_alphabet(self, alphabet: Alphabet):
         return self.node._check_alphabet(alphabet)
 
@@ -81,6 +100,9 @@ class REUnion(RENode):
 
     def __str__(self):
         return "(" + ")|(".join([str(n) for n in self.nodes]) + ")"
+
+    def __len__(self):
+        return sum([len(child) for child in self.nodes])
 
     def _check_alphabet(self, alphabet: Alphabet):
         return all([n._check_alphabet(alphabet) for n in self.nodes])
@@ -105,3 +127,6 @@ class RegularExpression:
 
     def __str__(self) -> str:
         return str(self.root)
+
+    def __len__(self) -> int:
+        return len(self.root)
